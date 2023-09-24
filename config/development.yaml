@@ -1,0 +1,10 @@
+env:
+  mode: debug
+server:
+  port: 8011
+  timezone: UTC
+
+api_test:
+  user_detail: https://mfx-recruit-dev.herokuapp.com/users/%d
+  account_list: https://mfx-recruit-dev.herokuapp.com/users/%d/accounts
+

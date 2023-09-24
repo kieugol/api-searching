@@ -1,0 +1,11 @@
+version: "2"
+services:
+  app:
+    container_name: api-searching
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile-dev
+    volumes:
+      - ./:/go/src/github.com/coding-challenge/api-searching
+    ports:
+      - 8080:8011
