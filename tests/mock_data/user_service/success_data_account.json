@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "name": "A銀行",
+    "balance": 20000
+  },
+  {
+    "id": 3,
+    "user_id": 1,
+    "name": "C信用金庫",
+    "balance": 120000
+  },
+  {
+    "id": 5,
+    "user_id": 1,
+    "name": "E銀行",
+    "balance": 5000
+  }
+]

@@ -47,7 +47,7 @@ func ParseJSON(data []byte, target interface{}, modelName string) error {
 	return nil
 }
 
-func ReadFile(path string) string {
+func ReadFile(path string) []byte {
 	jsonFile, err := os.Open(path)
 	// if we os.Open returns an error then handle it
 	if err != nil {
@@ -57,5 +57,5 @@ func ReadFile(path string) string {
 
 	value, _ := ioutil.ReadAll(jsonFile)
 
-	return string(value)
+	return value
 }

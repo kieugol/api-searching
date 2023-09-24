@@ -55,7 +55,6 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 	go getAccounts(&wg)
 	wg.Wait()
 
-	// Return invalid case
 	if userSttCode != http.StatusOK {
 		return nil, userSttCode
 	}
@@ -66,10 +65,10 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 	// Parse data
 	var user *models.User
 	var accounts []*models.Account
-	err := util.ParseJSON([]byte(userReps), &user, "User")
-	err = util.ParseJSON([]byte(accReps), &accounts, "Account")
+	util.ParseJSON([]byte(userReps), &user, "User")
+	util.ParseJSON([]byte(accReps), &accounts, "Account")
 
-	if err != nil {
+	if user == nil || accounts == nil {
 		return nil, http.StatusInternalServerError
 	}
 	if user.IsEmpty() || len(accounts) == 0 || accounts[0].IsEmpty() {
