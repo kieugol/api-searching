@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -43,4 +45,17 @@ func ParseJSON(data []byte, target interface{}, modelName string) error {
 		return err
 	}
 	return nil
+}
+
+func ReadFile(path string) string {
+	jsonFile, err := os.Open(path)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer jsonFile.Close()
+
+	value, _ := ioutil.ReadAll(jsonFile)
+
+	return string(value)
 }

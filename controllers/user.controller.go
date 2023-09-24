@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/coding-challenge/api-searching/helpers/api"
 	"github.com/coding-challenge/api-searching/helpers/respond"
 	request "github.com/coding-challenge/api-searching/request/user"
 	"github.com/coding-challenge/api-searching/services"
@@ -10,7 +11,7 @@ import (
 )
 
 type UserController struct {
-	UserService services.UserService
+	UserService *services.UserService
 }
 
 func (userCtrl UserController) Detail(c *gin.Context) {
@@ -20,6 +21,7 @@ func (userCtrl UserController) Detail(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, respond.MissingParams())
 		return
 	}
+	userCtrl.UserService = services.NewUserService(api.NewHttClient())
 
 	data, sttCode := userCtrl.UserService.HandleDetail(req)
 

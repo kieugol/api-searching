@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"path"
 
 	"github.com/coding-challenge/api-searching/config"
 	"github.com/coding-challenge/api-searching/helpers/mytime"
@@ -26,8 +28,9 @@ func main() {
 		fmt.Println("Usage: server -e {mode}")
 		os.Exit(1)
 	}
+	log.Println("env", *env)
 	flag.Parse()
-	config.Init(*env)
+	config.Init(*env, path.Base("config"))
 	cfg := config.GetConfig()
 
 	ok := mytime.SetTimezone(cfg.GetString("timezone"))

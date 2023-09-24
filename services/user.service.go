@@ -13,14 +13,16 @@ import (
 )
 
 type UserService struct {
-	Api api.HttClient
+	Api api.IHttpClient
 }
 
-func NewUserService() {
-
+func NewUserService(client api.IHttpClient) *UserService {
+	return &UserService{
+		Api: client,
+	}
 }
 
-func (userSv *UserService) HandleDetail(req request.DetailRequest) (*models.User, int) {
+func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.User, int) {
 	// Load config
 	cfg := config.GetConfig()
 	apiUserDetail := fmt.Sprintf(cfg.GetString("api_test.user_detail"), req.ID)
@@ -28,14 +30,22 @@ func (userSv *UserService) HandleDetail(req request.DetailRequest) (*models.User
 	timeout := 5 // second
 
 	// Prepare api
-	var userReps, accReps []byte
+	var userReps, accReps string
 	var userSttCode, accSttCode int
 	getDetailUser := func(w *sync.WaitGroup) {
-		userReps, userSttCode = userSv.Api.Get(apiUserDetail, timeout, nil)
+		userReps, userSttCode = userSrv.Api.SendGet(api.Params{
+			URL:     apiUserDetail,
+			Timeout: timeout,
+			Header:  nil,
+		})
 		w.Done()
 	}
 	getAccounts := func(w *sync.WaitGroup) {
-		accReps, accSttCode = userSv.Api.Get(apiAccountList, timeout, nil)
+		accReps, accSttCode = userSrv.Api.SendGet(api.Params{
+			URL:     apiAccountList,
+			Timeout: timeout,
+			Header:  nil,
+		})
 		w.Done()
 	}
 	// Call api
@@ -56,8 +66,12 @@ func (userSv *UserService) HandleDetail(req request.DetailRequest) (*models.User
 	// Parse data
 	var user *models.User
 	var accounts []*models.Account
-	util.ParseJSON(userReps, &user, "User")
-	util.ParseJSON(accReps, &accounts, "Account")
+	err := util.ParseJSON([]byte(userReps), &user, "User")
+	err = util.ParseJSON([]byte(accReps), &accounts, "Account")
+
+	if err != nil {
+		return nil, http.StatusInternalServerError
+	}
 	if user.IsEmpty() || len(accounts) == 0 || accounts[0].IsEmpty() {
 		return nil, http.StatusNotFound
 	}
