@@ -1,6 +1,7 @@
 package unit
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -50,7 +51,7 @@ func (m *httpClientMock) initParams(id int) (request.DetailRequest, api.Params, 
 	return req, apiUserDetailParams, apiAccountListParams
 }
 
-func Test_Case_1_Data_Success(t *testing.T) {
+func Test_Case_1_Success(t *testing.T) {
 	// Mock data
 	pathF1, _ := filepath.Abs("../mock_data/user_service/success_data_user.json")
 	pathF2, _ := filepath.Abs("../mock_data/user_service/success_data_account.json")
@@ -70,7 +71,7 @@ func Test_Case_1_Data_Success(t *testing.T) {
 		dataExpected.Accounts = accountData
 	}
 	// Execute test service
-	userSrvTest := services.NewUserService(httpClientM)
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
 	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
 
 	// Assert test result
@@ -83,7 +84,7 @@ func Test_Case_1_Data_Success(t *testing.T) {
 	assert.Equal(t, http.StatusOK, sttCodeActual)
 }
 
-func Test_Case_2_Data_Failed_ApiGetUser(t *testing.T) {
+func Test_Case_2_Failed_Api_GetUser(t *testing.T) {
 	// Mock data
 	pathF1, _ := filepath.Abs("../mock_data/user_service/not_found_data.json")
 	pathF2, _ := filepath.Abs("../mock_data/user_service/success_data_account.json")
@@ -95,7 +96,7 @@ func Test_Case_2_Data_Failed_ApiGetUser(t *testing.T) {
 	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
 
 	// Execute test service
-	userSrvTest := services.NewUserService(httpClientM)
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
 	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
 
 	// Data expected
@@ -106,7 +107,7 @@ func Test_Case_2_Data_Failed_ApiGetUser(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, sttCodeActual)
 }
 
-func Test_Case_3_Data_Failed_ApiGetAccount(t *testing.T) {
+func Test_Case_3_Success_Api_GetAccountError(t *testing.T) {
 	// Mock data
 	pathF1, _ := filepath.Abs("../mock_data/user_service/success_data_user.json")
 	pathF2, _ := filepath.Abs("../mock_data/user_service/not_found_data.json")
@@ -118,7 +119,51 @@ func Test_Case_3_Data_Failed_ApiGetAccount(t *testing.T) {
 	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusNotFound)
 
 	// Execute test service
-	userSrvTest := services.NewUserService(httpClientM)
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
+	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
+
+	// Parse data expected
+	var dataExpected *models.User
+	util.ParseJSON([]byte(userDataMock), &dataExpected, "User")
+
+	// Assert test result
+	assert.Equal(t, dataExpected, dataActual)
+	assert.Equal(t, http.StatusOK, sttCodeActual)
+}
+
+func Test_Case_4_Failed_Api_GetUser500(t *testing.T) {
+	// Mock data
+	pathF, _ := filepath.Abs("../mock_data/user_service/success_data_account.json")
+	dataAccountMock := string(util.ReadFile(pathF))
+	httpClientM := new(httpClientMock)
+	req, apiUserDetailParams, apiAccountListParams := httpClientM.initParams(4)
+	httpClientM.On("SendGet", apiUserDetailParams).Return("", http.StatusInternalServerError)
+	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
+
+	// Execute test service
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
+	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
+
+	// Data expected
+	var dataExpected *models.User
+
+	// Assert test result
+	assert.Equal(t, dataExpected, dataActual)
+	assert.Equal(t, http.StatusInternalServerError, sttCodeActual)
+}
+
+func Test_Case_5_Failed_Api_ErrorStructDataUser(t *testing.T) {
+	// Mock data
+	pathF2, _ := filepath.Abs("../mock_data/user_service/success_data_account.json")
+	dataUserMock := `[]`
+	dataAccountMock := string(util.ReadFile(pathF2))
+	httpClientM := new(httpClientMock)
+	req, apiUserDetailParams, apiAccountListParams := httpClientM.initParams(5)
+	httpClientM.On("SendGet", apiUserDetailParams).Return(dataUserMock, http.StatusOK)
+	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
+
+	// Execute test service
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
 	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
 
 	// Data expected
@@ -129,51 +174,9 @@ func Test_Case_3_Data_Failed_ApiGetAccount(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, sttCodeActual)
 }
 
-func Test_Case_4_Data_Failed_ApiGetUser_500(t *testing.T) {
+func Test_Case_6_Success_Api_ErrorStructDataAccount(t *testing.T) {
 	// Mock data
-	pathF, _ := filepath.Abs("../mock_data/user_service/success_data_account.json")
-	dataAccountMock := string(util.ReadFile(pathF))
-	httpClientM := new(httpClientMock)
-	req, apiUserDetailParams, apiAccountListParams := httpClientM.initParams(4)
-	httpClientM.On("SendGet", apiUserDetailParams).Return("", http.StatusInternalServerError)
-	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
-
-	// Execute test service
-	userSrvTest := services.NewUserService(httpClientM)
-	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
-
-	// Data expected
-	var dataExpected *models.User
-
-	// Assert test result
-	assert.Equal(t, dataExpected, dataActual)
-	assert.Equal(t, http.StatusInternalServerError, sttCodeActual)
-}
-
-func Test_Case_5_Data_Failed_ApiGetAccount_500(t *testing.T) {
-	// Mock data
-	pathF, _ := filepath.Abs("../mock_data/user_service/success_data_user.json")
-	dataUserMock := string(util.ReadFile(pathF))
-	httpClientM := new(httpClientMock)
-	req, apiUserDetailParams, apiAccountListParams := httpClientM.initParams(5)
-	httpClientM.On("SendGet", apiUserDetailParams).Return(dataUserMock, http.StatusOK)
-	httpClientM.On("SendGet", apiAccountListParams).Return("", http.StatusInternalServerError)
-
-	// Execute test service
-	userSrvTest := services.NewUserService(httpClientM)
-	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
-
-	// Data expected
-	var dataExpected *models.User
-
-	// Assert test result
-	assert.Equal(t, dataExpected, dataActual)
-	assert.Equal(t, http.StatusInternalServerError, sttCodeActual)
-}
-
-func Test_Case_6_Data_Failed_Api_ParedDataError(t *testing.T) {
-	// Mock data
-	pathF1, _ := filepath.Abs("../mock_data/user_service/wrong_structure_data.json")
+	pathF1, _ := filepath.Abs("../mock_data/user_service/success_data_user.json")
 	pathF2, _ := filepath.Abs("../mock_data/user_service/wrong_structure_data.json")
 	dataUserMock := string(util.ReadFile(pathF1))
 	dataAccountMock := string(util.ReadFile(pathF2))
@@ -183,7 +186,31 @@ func Test_Case_6_Data_Failed_Api_ParedDataError(t *testing.T) {
 	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
 
 	// Execute test service
-	userSrvTest := services.NewUserService(httpClientM)
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
+	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
+
+	// Parse data expected
+	var dataExpected *models.User
+	util.ParseJSON([]byte(dataUserMock), &dataExpected, "User")
+
+	// Assert test result
+	assert.Equal(t, dataExpected, dataActual)
+	assert.Equal(t, http.StatusOK, sttCodeActual)
+}
+
+func Test_Case_7_Failed_Api_ErrorDataTypeUser(t *testing.T) {
+	// Mock data
+	pathF1, _ := filepath.Abs("../mock_data/user_service/wrong_data_type_user.json")
+	pathF2, _ := filepath.Abs("../mock_data/user_service/success_data_account.json")
+	dataUserMock := string(util.ReadFile(pathF1))
+	dataAccountMock := string(util.ReadFile(pathF2))
+	httpClientM := new(httpClientMock)
+	req, apiUserDetailParams, apiAccountListParams := httpClientM.initParams(7)
+	httpClientM.On("SendGet", apiUserDetailParams).Return(dataUserMock, http.StatusOK)
+	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
+
+	// Execute test service
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
 	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
 
 	// Data expected
@@ -191,5 +218,29 @@ func Test_Case_6_Data_Failed_Api_ParedDataError(t *testing.T) {
 
 	// Assert test result
 	assert.Equal(t, dataExpected, dataActual)
-	assert.Equal(t, http.StatusInternalServerError, sttCodeActual)
+	assert.Equal(t, http.StatusNotFound, sttCodeActual)
+}
+
+func Test_Case_8_Success_Api_ErrorDataTypeAccount(t *testing.T) {
+	// Mock data
+	pathF1, _ := filepath.Abs("../mock_data/user_service/success_data_user.json")
+	pathF2, _ := filepath.Abs("../mock_data/user_service/wrong_data_type_account.json")
+	dataUserMock := string(util.ReadFile(pathF1))
+	dataAccountMock := string(util.ReadFile(pathF2))
+	httpClientM := new(httpClientMock)
+	req, apiUserDetailParams, apiAccountListParams := httpClientM.initParams(8)
+	httpClientM.On("SendGet", apiUserDetailParams).Return(dataUserMock, http.StatusOK)
+	httpClientM.On("SendGet", apiAccountListParams).Return(dataAccountMock, http.StatusOK)
+
+	// Execute test service
+	userSrvTest := services.NewUserService(context.TODO(), httpClientM)
+	dataActual, sttCodeActual := userSrvTest.HandleDetail(req)
+
+	// Data expected
+	var dataExpected *models.User
+	util.ParseJSON([]byte(dataUserMock), &dataExpected, "User")
+
+	// Assert test result
+	assert.Equal(t, dataExpected, dataActual)
+	assert.Equal(t, http.StatusOK, sttCodeActual)
 }

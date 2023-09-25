@@ -21,8 +21,8 @@ func (userCtrl UserController) Detail(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, respond.MissingParams())
 		return
 	}
-	userCtrl.UserService = services.NewUserService(api.NewHttClient())
 
+	userCtrl.UserService = services.NewUserService(c, api.NewHttClient())
 	data, sttCode := userCtrl.UserService.HandleDetail(req)
 
 	switch sttCode {

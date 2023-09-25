@@ -10,3 +10,9 @@ logs:
 	docker logs -f api-searching
 ssh-app:
 	docker exec -it api-searching bash
+
+unit-test:
+	go test tests/unit/user.service_test.go -v
+
+integration-test:
+	go test tests/unit/user.service_test.go -v

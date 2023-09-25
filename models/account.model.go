@@ -8,6 +8,6 @@ type Account struct {
 	Balance int32  `json:"balance,omitempty"`
 }
 
-func (acc Account) IsEmpty() bool {
-	return reflect.DeepEqual(acc, Account{})
+func (acc *Account) IsEmpty() bool {
+	return reflect.DeepEqual(*acc, Account{}) || acc == nil
 }

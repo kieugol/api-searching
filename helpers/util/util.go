@@ -1,7 +1,6 @@
 package util
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -31,14 +30,6 @@ func LogPrint(jsonData interface{}) {
 	fmt.Printf("%s\n", strings.ReplaceAll(string(prettyJSON), "\n", ""))
 }
 
-func GetKeyFromContext(ctx context.Context, key string) (interface{}, bool) {
-	if v := ctx.Value(key); v != nil {
-		return v, true
-	}
-
-	return nil, false
-}
-
 func ParseJSON(data []byte, target interface{}, modelName string) error {
 	if err := json.Unmarshal(data, target); err != nil {
 		logrus.WithField("model", modelName).WithField("error", err.Error()).Error("PARSE_DATA_ERROR")
@@ -49,7 +40,6 @@ func ParseJSON(data []byte, target interface{}, modelName string) error {
 
 func ReadFile(path string) []byte {
 	jsonFile, err := os.Open(path)
-	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}

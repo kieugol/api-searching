@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"sync"
@@ -14,11 +15,13 @@ import (
 
 type UserService struct {
 	Api api.IHttpClient
+	Ctx context.Context
 }
 
-func NewUserService(client api.IHttpClient) *UserService {
+func NewUserService(ctx context.Context, client api.IHttpClient) *UserService {
 	return &UserService{
 		Api: client,
+		Ctx: ctx,
 	}
 }
 
@@ -31,7 +34,7 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 
 	// Prepare api
 	var userReps, accReps string
-	var userSttCode, accSttCode int
+	var userSttCode int
 	getDetailUser := func(w *sync.WaitGroup) {
 		userReps, userSttCode = userSrv.Api.SendGet(api.Params{
 			URL:     apiUserDetail,
@@ -41,7 +44,7 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 		w.Done()
 	}
 	getAccounts := func(w *sync.WaitGroup) {
-		accReps, accSttCode = userSrv.Api.SendGet(api.Params{
+		accReps, _ = userSrv.Api.SendGet(api.Params{
 			URL:     apiAccountList,
 			Timeout: timeout,
 			Header:  nil,
@@ -58,9 +61,6 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 	if userSttCode != http.StatusOK {
 		return nil, userSttCode
 	}
-	if accSttCode != http.StatusOK {
-		return nil, accSttCode
-	}
 
 	// Parse data
 	var user *models.User
@@ -68,11 +68,14 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 	util.ParseJSON([]byte(userReps), &user, "User")
 	util.ParseJSON([]byte(accReps), &accounts, "Account")
 
-	if user == nil || accounts == nil || user.IsEmpty() || len(accounts) == 0 {
+	if user.IsEmpty() {
 		return nil, http.StatusNotFound
 	}
-
-	user.Accounts = accounts
+	for _, acc := range accounts {
+		if !acc.IsEmpty() {
+			user.Accounts = append(user.Accounts, acc)
+		}
+	}
 
 	return user, http.StatusOK
 }
