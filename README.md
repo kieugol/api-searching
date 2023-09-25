@@ -15,7 +15,7 @@
 
 3. **Execute test**
    - Rest API: Using postman
-      1. Get API: `http://localhost:8080/v1/users/1`
+      1. URL: `http://localhost:8080/v1/users/1`
       2. Header request: _data any(just make it as sample)_  
          `X-PLATFORM:IOS`  
          `X-DEVICE-TYPE:phone`  
@@ -25,6 +25,6 @@
 
    - Unit test: Using `make` file
       1. CD to root folder `api-searching`.
-      2. Test controller `make unit-test-controller` see report html at `tests/report`
-      3. Test Service `make unit-test-controller`  see report html at `tests/report`
+      2. Test controller `make unit-test-controller` see report html at `tests/report/user.controller.coverage.html`
+      3. Test Service `make unit-test-service`  see report html at `tests/report/user.service.coverage.html`
    
