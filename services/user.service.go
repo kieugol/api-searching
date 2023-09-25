@@ -68,10 +68,7 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 	util.ParseJSON([]byte(userReps), &user, "User")
 	util.ParseJSON([]byte(accReps), &accounts, "Account")
 
-	if user == nil || accounts == nil {
-		return nil, http.StatusInternalServerError
-	}
-	if user.IsEmpty() || len(accounts) == 0 || accounts[0].IsEmpty() {
+	if user == nil || accounts == nil || user.IsEmpty() || len(accounts) == 0 {
 		return nil, http.StatusNotFound
 	}
 
