@@ -1,0 +1,8 @@
+mode: count
+github.com/coding-challenge/api-searching/controllers/user.controller.go:16.71,20.2 1 4
+github.com/coding-challenge/api-searching/controllers/user.controller.go:22.55,24.46 2 4
+github.com/coding-challenge/api-searching/controllers/user.controller.go:24.46,28.3 3 1
+github.com/coding-challenge/api-searching/controllers/user.controller.go:29.2,31.17 2 3
+github.com/coding-challenge/api-searching/controllers/user.controller.go:32.27,34.9 2 1
+github.com/coding-challenge/api-searching/controllers/user.controller.go:35.38,37.9 2 1
+github.com/coding-challenge/api-searching/controllers/user.controller.go:40.2,40.57 1 1

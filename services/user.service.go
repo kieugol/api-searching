@@ -13,6 +13,10 @@ import (
 	request "github.com/coding-challenge/api-searching/request/user"
 )
 
+type IUserService interface {
+	HandleDetail(req request.DetailRequest) (*models.User, int)
+}
+
 type UserService struct {
 	Api api.IHttpClient
 	Ctx context.Context

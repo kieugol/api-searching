@@ -3,14 +3,18 @@ package routes
 import (
 	"net/http"
 
+	"github.com/coding-challenge/api-searching/services"
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-challenge/api-searching/controllers"
+	"github.com/coding-challenge/api-searching/helpers/api"
 	"github.com/coding-challenge/api-searching/middleware"
 )
 
 func RouteInit(engine *gin.Engine) {
-	userCtr := new(controllers.UserController)
+	var c *gin.Context
+	userSrv := services.NewUserService(c, api.NewHttClient())
+	userCtr := controllers.NewUserController(userSrv)
 
 	engine.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API fetching data")

@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/coding-challenge/api-searching/helpers/api"
 	"github.com/coding-challenge/api-searching/helpers/respond"
 	request "github.com/coding-challenge/api-searching/request/user"
 	"github.com/coding-challenge/api-searching/services"
@@ -11,7 +10,13 @@ import (
 )
 
 type UserController struct {
-	UserService *services.UserService
+	UserSrv services.IUserService
+}
+
+func NewUserController(userSrv services.IUserService) *UserController {
+	return &UserController{
+		UserSrv: userSrv,
+	}
 }
 
 func (userCtrl UserController) Detail(c *gin.Context) {
@@ -21,9 +26,7 @@ func (userCtrl UserController) Detail(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, respond.MissingParams())
 		return
 	}
-
-	userCtrl.UserService = services.NewUserService(c, api.NewHttClient())
-	data, sttCode := userCtrl.UserService.HandleDetail(req)
+	data, sttCode := userCtrl.UserSrv.HandleDetail(req)
 
 	switch sttCode {
 	case http.StatusNotFound:
