@@ -1,4 +1,3 @@
-# [Money Forward Vietnam] - Coding Challenge invitation (6257)
 
 1. **Requirement**
    * install `Docker` latest or stable version
