@@ -41,6 +41,9 @@ RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool make
 RUN mkdir -p /go/src/github.com/coding-challenge/api-searching
 WORKDIR /go/src/github.com/coding-challenge/api-searching
 
+# Copy go.mod and go.sum files first for better caching
+COPY go.mod go.sum ./
+
 # Tidy up module dependencies and create vendor directory
 RUN go mod tidy -compat=1.20
 RUN go mod vendor
@@ -48,9 +51,8 @@ RUN go mod vendor
 # Copy the rest of the application code
 COPY . .
 
-# Install CompileDaemon for hot reloading
-RUN go install github.com/githubnemo/CompileDaemon@latest
+RUN go build -o build/api ./main.go
 
 EXPOSE 8088
 # Set the entrypoint to use CompileDaemon for hot reloading
-ENTRYPOINT ["CompileDaemon", "-build=go build -o build/api ./main.go", "-command=./build/api"]
+CMD ["./api"]
