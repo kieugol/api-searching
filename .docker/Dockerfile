@@ -25,5 +25,5 @@ COPY . .
 RUN go install github.com/githubnemo/CompileDaemon@latest
 
 EXPOSE 8080
-#Command to run the binary
+#Command to run the binary api
 CMD ["./api"]
