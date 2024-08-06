@@ -4,7 +4,7 @@ services:
     container_name: api-searching
     build:
       context: .
-      dockerfile: .docker/Dockerfile-dev
+      dockerfile: .docker/Dockerfile
     volumes:
       - ./:/go/src/github.com/coding-challenge/api-searching
     ports:
