@@ -10,10 +10,12 @@ RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool make
 
 # Create and set the working directory
 RUN mkdir -p /go/src/github.com/coding-challenge/api-searching
+
 WORKDIR /go/src/github.com/coding-challenge/api-searching
 
 # Copy the rest of the application code
 COPY . .
+RUN ls -la
 
 # Tidy up module dependencies and create vendor directory
 RUN go mod tidy -compat=1.20
@@ -23,6 +25,11 @@ RUN go build -o build/api ./main.go
 
 #-------------------------------------------------------
 FROM alpine
+ENV GO111MODULE=on
+ENV APP_ENV production
+ENV GOPROXY=https://proxy.golang.org
+ENV APP_NAME api-searching
+ENV GOLANG_PROTOBUF_REGISTRATION_CONFLICT=ignore
 
 RUN mkdir /usr/local/lib/searching
 WORKDIR /usr/local/lib/searching
