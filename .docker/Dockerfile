@@ -13,7 +13,7 @@ RUN mkdir -p /go/src/github.com/coding-challenge/api-searching
 WORKDIR /go/src/github.com/coding-challenge/api-searching
 
 # Copy the rest of the application code
-ADD . .
+COPY . .
 
 # Tidy up module dependencies and create vendor directory
 RUN go mod tidy -compat=1.20
