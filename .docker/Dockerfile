@@ -6,14 +6,11 @@ ENV GO111MODULE=on
 ENV APP_ENV=development
 
 # Install necessary packages
-RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool make
+RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool
 
-# Create and set the working directory
-RUN mkdir -p /go/src/github.com/coding-challenge/api-searching
+WORKDIR /app
 
-WORKDIR /go/src/github.com/coding-challenge/api-searching
-
-COPY go.* ./
+COPY go.mod ./
 
 # Tidy up module dependencies and create vendor directory
 RUN go mod tidy -compat=1.20
@@ -22,7 +19,7 @@ RUN go mod vendor
 # Copy the rest of the application code
 COPY . .
 
-RUN go build -o build/api ./main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o myapp .
 
 #-------------------------------------------------------
 FROM alpine
@@ -32,12 +29,10 @@ ENV GOPROXY=https://proxy.golang.org
 ENV APP_NAME api-searching
 ENV GOLANG_PROTOBUF_REGISTRATION_CONFLICT=ignore
 
-RUN mkdir /usr/local/lib/searching
-WORKDIR /usr/local/lib/searching
+RUN apk --no-cache add ca-certificates
 
-COPY --from=builder /go/src/github.com/coding-challenge/api-searching/config /usr/local/lib/searching/config
-COPY --from=builder /go/src/github.com/coding-challenge/api-searching/build/api /usr/local/bin/api
+COPY --from=builder /app/myapp /app/myapp
 
 EXPOSE 8080
 #Command to run the binary api
-ENTRYPOINT ["/usr/local/bin/api"]
+CMD ["/app/myapp"]
