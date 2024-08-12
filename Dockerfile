@@ -18,7 +18,7 @@ RUN go mod tidy -compat=1.20
 RUN go mod vendor
 
 # Copy the rest of the application code
-COPY .docker .
+COPY . .
 
 RUN go build -ldflags '-s -w' -a -installsuffix cgo -o build/server ./main.go
 
@@ -39,4 +39,4 @@ COPY --from=builder /app/build/server /usr/local/bin/server
 
 EXPOSE 8080
 # Command to run the binary
-CMD ["/usr/local/bin/s
+CMD ["/usr/local/bin/server"]
