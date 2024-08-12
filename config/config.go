@@ -23,7 +23,7 @@ func Init(env string, pathDir string) {
 
 		err = v.ReadInConfig()
 		if err != nil {
-			log.Fatal("error on parsing configuration file")
+			log.Fatal("error on parsing configuration file:", err)
 		}
 		config = v
 	}

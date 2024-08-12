@@ -3,7 +3,9 @@ FROM golang:1.20-alpine as builder
 
 # Set environment variables
 ENV GO111MODULE=on
-ENV APP_ENV=development
+ENV APP_ENV=production
+ENV GOPROXY=https://proxy.golang.org
+ENV APP_NAME=api-searching
 
 # Install necessary packages
 RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool
@@ -14,8 +16,7 @@ WORKDIR /app
 COPY go.mod ./
 
 # Tidy up module dependencies and create vendor directory
-RUN go mod tidy -compat=1.20
-RUN go mod vendor
+RUN go mod download
 
 # Copy the rest of the application code
 COPY . .

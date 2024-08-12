@@ -16,7 +16,7 @@ COPY go.mod ./
 
 # Tidy up module dependencies and create vendor directory
 RUN go mod tidy -compat=1.20
-RUN go mod vendor
+RUN go mod download
 
 # Copy the rest of the application code
 COPY .docker .
@@ -24,6 +24,6 @@ COPY .docker .
 # Install CompileDaemon for hot reloading
 RUN go install github.com/githubnemo/CompileDaemon@latest
 
-EXPOSE 8088
+EXPOSE 8080
 # Set the entrypoint to use CompileDaemon for hot reloading
 ENTRYPOINT ["CompileDaemon", "-build=go build -o build/api ./main.go", "-command=./build/api"]
