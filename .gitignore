@@ -2,5 +2,4 @@ vendor
 debug
 /build
 .idea
-go.sum
 .history
