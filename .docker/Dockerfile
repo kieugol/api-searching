@@ -8,7 +8,11 @@ ENV APP_ENV=development
 # Install necessary packages
 RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool
 
+RUN ls -la
+
 WORKDIR /app
+
+RUN ls -la
 
 COPY go.* ./
 
