@@ -8,38 +8,35 @@ ENV APP_ENV=development
 # Install necessary packages
 RUN apk add --no-cache bash curl g++ libc-dev autoconf automake libtool
 
-RUN ls -la
-
 WORKDIR /app
 
-RUN ls -la
-
-COPY go.* ./
+COPY ../go.mod ./
 
 # Tidy up module dependencies and create vendor directory
 RUN go mod tidy -compat=1.20
 RUN go mod vendor
 
 # Copy the rest of the application code
-COPY . .
+COPY ../. .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -mod=readonly -v -o server
+RUN go build -ldflags '-s -w' -a -installsuffix cgo -o build/server ./main.go
 
 #-------------------------------------------------------
-FROM scratch
+FROM alpine
+
+RUN apk add ca-certificates tzdata
+RUN mkdir /usr/local/lib/api
+WORKDIR /usr/local/lib/api
 
 ENV GO111MODULE=on
 ENV APP_ENV production
 ENV GOPROXY=https://proxy.golang.org
 ENV APP_NAME api-searching
-ENV GOLANG_PROTOBUF_REGISTRATION_CONFLICT=ignore
-
-RUN apk --no-cache add ca-certificates
 
 # Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/config ./app/config
-COPY --from=builder /app/server ./app/server
+COPY --from=builder /app/config /usr/local/lib/api/config
+COPY --from=builder /app/build/server /usr/local/bin/server
 
 EXPOSE 8080
 #Command to run the binary api
-CMD ["/app/server"]
+CMD ["/usr/local/bin/server"]
