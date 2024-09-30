@@ -26,5 +26,6 @@ func RouteInit(engine *gin.Engine) {
 	apiV1.Use(middleware.RequestLog()) // format log request -response
 	{
 		apiV1.GET("/users/:id", userCtr.Detail)
+		apiV1.GET("/users-v2/:id", userCtr.Detail)
 	}
 }

@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "name": "Alice",
+  "account_ids": [
+    1,
+    3,
+    5
+  ]
+}
