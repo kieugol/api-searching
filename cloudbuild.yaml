@@ -9,3 +9,4 @@ steps:
 
 images:
   - 'gcr.io/$PROJECT_ID/$SERVICE_NAME'
+logsBucket: "gs://dev-building-logs"
