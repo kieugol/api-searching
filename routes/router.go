@@ -27,5 +27,6 @@ func RouteInit(engine *gin.Engine) {
 	{
 		apiV1.GET("/users/:id", userCtr.Detail)
 		apiV1.GET("/users-v2/:id", userCtr.Detail)
+		apiV1.GET("/detail/:id", userCtr.Detail)
 	}
 }
