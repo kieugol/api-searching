@@ -16,6 +16,7 @@ WORKDIR /app
 COPY go.mod ./
 
 # Tidy up module dependencies and create vendor directory
+RUN go mod tidy -compat=1.20
 RUN go mod download
 
 # Copy the rest of the application code
