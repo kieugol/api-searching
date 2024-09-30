@@ -1,12 +1,12 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/$SERVICE_NAME', '-f', '/Dockerfile', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME', '-f', '/Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/$SERVICE_NAME']
+    args: ['push', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME']
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'gcloud'
-    args: ['run', 'deploy', 'api-searching', '--image', 'gcr.io/$PROJECT_ID/$SERVICE_NAME', '--platform', 'managed', '--region', '$_REGION', '--quiet']
+    args: ['run', 'deploy', 'api-searching', '--image', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--platform', 'managed', '--region', '$_REGION', '--quiet']
 
 images:
-  - 'gcr.io/$PROJECT_ID/$SERVICE_NAME'
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
 logsBucket: "gs://dev-building-logs"
