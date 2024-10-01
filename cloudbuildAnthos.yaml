@@ -8,7 +8,7 @@ steps:
       - '--image=gcr.io/$PROJECT_ID/$_SERVICE_NAME'
       - '--platform=gke'
       - '--cluster=cluster-be'  # Replace with your Anthos cluster name
-      - '--cluster-location=asia-northeast1'  # Replace with your cluster's region
+      - '--cluster-location=asia-northeast1'
       - '--namespace=default'
       - '--quiet'
 
