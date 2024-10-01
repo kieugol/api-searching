@@ -1,0 +1,24 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME', '-f', 'Dockerfile', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'gcloud'
+    args:
+      - run
+      - deploy
+      - $_SERVICE_NAME
+      - '--image=gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+      - '--platform=gke'
+      - '--cluster=cluster-be'  # Replace with your Anthos cluster name
+      - '--cluster-location=asia-northeast1'  # Replace with your cluster's region
+      - '--namespace=default'  # Replace with the desired namespace
+      - '--quiet'
+
+images:
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+
+logsBucket: "gs://dev-building-logs"
