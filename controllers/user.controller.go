@@ -39,3 +39,7 @@ func (userCtrl UserController) Detail(c *gin.Context) {
 
 	c.JSON(http.StatusOK, respond.Success(data, "Success"))
 }
+
+func (userCtrl UserController) PublishTopic(c *gin.Context) {
+
+}

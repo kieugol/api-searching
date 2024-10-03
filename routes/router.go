@@ -16,6 +16,8 @@ func RouteInit(engine *gin.Engine) {
 	userSrv := services.NewUserService(c, api.NewHttClient())
 	userCtr := controllers.NewUserController(userSrv)
 
+	pubCtr := new(controllers.PubController)
+
 	engine.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API fetching data")
 	})
@@ -28,6 +30,6 @@ func RouteInit(engine *gin.Engine) {
 		apiV1.GET("/users/:id", userCtr.Detail)
 		apiV1.GET("/users-v2/:id", userCtr.Detail)
 		apiV1.GET("/detail/:id", userCtr.Detail)
-		apiV1.GET("/detail-v2/:id", userCtr.Detail)
+		apiV1.GET("/publish-mgs/:id", pubCtr.PublishTopic)
 	}
 }

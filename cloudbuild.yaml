@@ -5,7 +5,16 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME']
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'gcloud'
-    args: ['run', 'deploy', 'api-searching', '--image', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--platform', 'managed', '--region', '$_REGION', '--quiet']
+    args: [
+      'run',
+      'deploy',
+      'api-searching',
+      '--image', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME',
+      '--platform', 'managed',
+      '--region', '$_REGION',
+      '--set-env-vars=PUB_SUB_KEY=$_PUB_SUB_KEY
+      '--quiet',
+    ]
 
 images:
   - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'

@@ -1,5 +1,5 @@
 # Use the official Golang image as a base
-FROM golang:1.20-alpine as builder
+FROM golang:1.21-alpine as builder
 
 # Set environment variables
 ENV GO111MODULE=on
@@ -16,7 +16,7 @@ WORKDIR /app
 COPY go.mod ./
 
 # Tidy up module dependencies and create vendor directory
-RUN go mod tidy -compat=1.20
+RUN go mod tidy -compat=1.21
 RUN go mod vendor
 
 # Copy the rest of the application code
