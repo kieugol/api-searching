@@ -39,7 +39,7 @@ func (pubCtrl *PubController) PublishTopic(c *gin.Context) {
 	ctx := context.Background()
 
 	pubKey := os.Getenv("PUB_SUB_KEY")
-	msgBytes, err := json.Marshal(pubKey)
+	msgBytes, _ := json.Marshal(pubKey)
 
 	client, err := pubsub.NewClient(ctx, projectId, option.WithCredentialsJSON(msgBytes))
 	if err != nil {
@@ -80,7 +80,7 @@ func (pubCtrl *PubController) PublishTopic(c *gin.Context) {
 	}
 
 	// Convert your custom structure `msgData` to JSON (if necessary)
-	msgBytes, err := json.Marshal(msg)
+	msgBytes, err = json.Marshal(msg)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal message"})
 		return
