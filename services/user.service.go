@@ -40,20 +40,20 @@ func (userSrv *UserService) HandleDetail(req request.DetailRequest) (*models.Use
 	var userReps, accReps string
 	var userSttCode int
 	getDetailUser := func(w *sync.WaitGroup) {
+		defer w.Done()
 		userReps, userSttCode = userSrv.Api.SendGet(api.Params{
 			URL:     apiUserDetail,
 			Timeout: timeout,
 			Header:  nil,
 		})
-		w.Done()
 	}
 	getAccounts := func(w *sync.WaitGroup) {
+		defer w.Done()
 		accReps, _ = userSrv.Api.SendGet(api.Params{
 			URL:     apiAccountList,
 			Timeout: timeout,
 			Header:  nil,
 		})
-		w.Done()
 	}
 	// Call api
 	var wg sync.WaitGroup
